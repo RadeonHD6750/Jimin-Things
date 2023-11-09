@@ -15,10 +15,11 @@ SimpleKalman::SimpleKalman(float X)
 	this->X = X;
 }
 
-SimpleKalman::SimpleKalman(float Q, float R, float X)
+SimpleKalman::SimpleKalman(float Q, float R, float P, float X)
 {
 	this->Q = Q;
 	this->R = R;
+	this->P = P;
 	this->X = X;
 }
 

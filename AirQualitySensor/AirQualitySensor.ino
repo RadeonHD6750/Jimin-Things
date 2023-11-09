@@ -24,7 +24,7 @@ SimpleKalman *humKalman;
 DHT dht(DHTPIN, DHTTYPE);
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
-float no_dust = 0.22; //최초 전원 인가 후 깨끗한 환경에서의 지속적으로 측정되는 전압값 넣어주세요 
+float no_dust = 0.28; //최초 전원 인가 후 깨끗한 환경에서의 지속적으로 측정되는 전압값 넣어주세요 
 
 int dustout=A4; // 센서의 5번핀 먼지를 측정 아두이노 A4번에 연결
 
@@ -75,16 +75,16 @@ void setup()
  }
  dust_density_mean = dust_density_mean / 100;
 
- dustKalman = new SimpleKalman(0, 20, dust_density_mean);
+ dustKalman = new SimpleKalman(0, 50, 4, dust_density_mean);
 
 
  float h = dht.readHumidity(); //습도값을 h에 저장
  float t = dht.readTemperature(); //온도값을 t에 저장
  float f = dht.readTemperature(true);
 
-  tempKalman = new SimpleKalman(t);
-  humKalman = new SimpleKalman(h);
-  fahKalman = new SimpleKalman(f);
+  tempKalman = new SimpleKalman(0, 10, 4, t);
+  humKalman = new SimpleKalman(0, 10, 4, h);
+  fahKalman = new SimpleKalman(0, 10, 4, f);
 
  lcd.clear();
  lcd.print("clean "); 
@@ -106,9 +106,9 @@ void loop()
 
   //먼지
   float raw = get_sensor_analog();
-  if(raw >= no_dust)
+  sensor_voltage = get_voltage(raw); // get_voltage 함수 실행
+  if(sensor_voltage >= no_dust)
   {
-    sensor_voltage = get_voltage(raw); // get_voltage 함수 실행
     float dust_density = get_dust_density(sensor_voltage); // get_dust_density 함수 실행
 
     filtered_dust = dustKalman->FilterUpdate(dust_density);
@@ -193,7 +193,7 @@ void loop()
     Serial.println("LED R");
    }
 
-  delay(3000);
+  delay(5000);
 }
 
 float get_sensor_analog()
@@ -226,6 +226,8 @@ float get_dust()
   
  float current_vo_value = get_sensor_analog();
  float sensor_voltage = get_voltage(current_vo_value); // get_voltage 함수 실행
+
+
  float dust_density = get_dust_density(sensor_voltage); // get_dust_density 함수 실행
 
  return  dust_density;
