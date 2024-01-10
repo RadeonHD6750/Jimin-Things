@@ -40,13 +40,14 @@ MQTTManager mqtt;
 
 //Sensor
 THSensor th;
-
+unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
 const long sensinginterval = 2000;
 
 //AnalogRead
 int analogPin = A0;
 
+void networking();
 void sensing();
 bool operatingSwitchingDebounce();
 
@@ -63,16 +64,17 @@ void setup() {
 }
 
 void loop() { 
-
+  currentMillis = millis();
+  
   int reading = digitalRead(operatingPin);
 
   // If the switch changed, due to noise or pressing:
   if (reading != lastButtonState) {
     // reset the debouncing timer
-    lastDebounceTime = millis();
+    lastDebounceTime = currentMillis;
   }
 
-  if ((millis() - lastDebounceTime) > debounceDelay) {
+  if ((currentMillis - lastDebounceTime) > debounceDelay) {
     // whatever the reading is at, it's been there for longer than the debounce
     // delay, so take it as the actual current state:
 
@@ -98,7 +100,7 @@ void loop() {
   switch(operatingMode)
   {
     case 1:
-      server->handleClient();
+      networking();
       break;
 
 
@@ -109,11 +111,14 @@ void loop() {
 
 }
 
+void networking()
+{
+  server->handleClient();
+}
+
 
 void sensing()
 {
-  unsigned long currentMillis = millis();
-
   if (currentMillis - previousMillis >= sensinginterval) {
     // save the last time you blinked the LED
     previousMillis = currentMillis;
