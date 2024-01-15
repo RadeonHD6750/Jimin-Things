@@ -4,10 +4,11 @@ ESP8266WebServer webServer(80);
 
 const char* ap_ssid = "NEXTIT-Solution";
 const char* ap_password = "12345678";
-const int WIFI_MAX_SIZE = 10;
+const int WIFI_MAX_SIZE = 15;
 
 String wifiList[WIFI_MAX_SIZE];
-String rssiList[WIFI_MAX_SIZE];
+int rssiList[WIFI_MAX_SIZE];
+int scanningCount = 0;
 
 HTMLPage html;
 String connectedSSID = "-1";
@@ -52,16 +53,48 @@ void scanWiFiList()
 {
   int numberOfNetworks = WiFi.scanNetworks();
     
-  for(int i =0; i<numberOfNetworks; i++){
-    rssiList[i] = WiFi.RSSI(i);
+  scanningCount = 0;
+  for(int i =0; i < numberOfNetworks; i++){
+  
+    String tempSSID = WiFi.SSID(i);
+    tempSSID.trim();
+    int tempRSSI = WiFi.RSSI(i);
 
-    wifiList[i] = WiFi.SSID(i);
+    if(tempSSID != "" && tempSSID != " ")
+    {
+      wifiList[scanningCount] = tempSSID;
+      rssiList[scanningCount] = tempRSSI;
+      scanningCount++;
+    }
   }
+
+  for(int i =0; i < scanningCount; i++)
+  {
+    
+    for(int j = 0; j < scanningCount - 1; j++)
+    {
+      if(rssiList[j] < rssiList[j + 1])
+      {
+        int temp = rssiList[j];
+        rssiList[j] = rssiList[j + 1];
+        rssiList[j + 1] = temp;
+
+        String temp2 = wifiList[j];
+        wifiList[j] = wifiList[j + 1];
+        wifiList[j + 1] = temp2;
+      }
+    }
+  }
+
 }
 
 //GetMapping("/")
 void indexController()
 {
+  
+  //여기서 EEPROM에 저장된 SSID, Password가 있다면 불러오기
+  //불러와서 WEB에다 보여주기
+  scanWiFiList();
   webServer.send(200, "text/html", prepareSelectWifiListPage());
 }
 
@@ -87,15 +120,13 @@ void wifiListController()
 //와이파이 스캔
 String prepareSelectWifiListPage(){
 
-  //여기서 EEPROM에 저장된 SSID, Password가 있다면 불러오기
-  //불러와서 WEB에다 보여주기
-  scanWiFiList();
   //와이파이 스캔 결과 만들기
   String strList ="<ul>";
-  for(int i =0; i< WIFI_MAX_SIZE; i++){
+  for(int i =0; i< scanningCount; i++){
       if(wifiList[i] != "")
       {
-        strList += "<li><a name='" + wifiList[i] + "' onclick='select(this.name)'>" + wifiList[i] + " : "+ rssiList[i] + "</a> </li>";
+        strList += "<li><a name='" + wifiList[i] + "' onclick='select(this.name)'>" 
+        + wifiList[i] +  " (" + rssiList[i] + ") </a> </li>";
       }
   }
   strList += "</ul>";

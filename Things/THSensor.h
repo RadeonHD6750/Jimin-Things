@@ -7,7 +7,7 @@
 
 #include <DHT.h>
 
-#define DHTPIN 3
+#define DHTPIN 5
 #define DHTTYPE DHT11
 
 

@@ -141,13 +141,12 @@ void sensing()
       String tempStr = String(temp);
       String humStr = String(hum);
 
-      String log = String("analog : " + readAnalogStr + "  temp : " + tempStr + " hum : " + humStr);
-      Serial.println(log);
-
       //publish
-      String data = String("{\"sensor_id\" : \"" + sensorID + "\", \"analog\": \""+  readAnalogStr  +"\"}" );
+      String data = String("{\"sensor_id\" : \"" + sensorID +
+       "\", \"analog\": \""+  readAnalogStr  + "\", \"temp\": \"" +  tempStr  + "\"}" );
 
       mqtt.publish(rootTopic, data);
+      Serial.println(data);
     }
     else
     {
