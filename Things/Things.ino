@@ -143,7 +143,10 @@ void sensing()
 
       //publish
       String data = String("{\"sensor_id\" : \"" + sensorID +
-       "\", \"analog\": \""+  readAnalogStr  + "\", \"temp\": \"" +  tempStr  + "\"}" );
+       "\", \"analog\": \""+  readAnalogStr  
+        + "\", \"temp\": \"" +  tempStr 
+        + "\", \"hum\": \"" +  humStr
+        + "\"}" );
 
       mqtt.publish(rootTopic, data);
       Serial.println(data);

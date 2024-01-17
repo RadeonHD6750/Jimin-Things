@@ -11,8 +11,8 @@ int rssiList[WIFI_MAX_SIZE];
 int scanningCount = 0;
 
 HTMLPage html;
-String connectedSSID = "-1";
-String connectedPassword = "-1";
+String connectedSSID = "next_office";
+String connectedPassword = "nextit8850";
 
 String getConnectedSSID()
 {
