@@ -137,4 +137,25 @@ String prepareSelectWifiListPage(){
 }
 
 
+String getEEPROM(int address)
+{
+  char temp[20];
+  EEPROM.get(address, temp);
+    
+  String tempStr(temp);
+
+  tempStr.trim();
+  return tempStr;
+}
+
+String getSSIDEEPROM()
+{
+  return getEEPROM(connectedSSIDAddress);
+}
+
+String getPWEEPROM()
+{
+  return getEEPROM(connectedPasswordAddress);
+}
+
 
