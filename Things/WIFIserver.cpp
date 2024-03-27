@@ -2,7 +2,7 @@
 
 ESP8266WebServer webServer(80);
 
-const char* ap_ssid = "NEXTIT-Solution";
+const char* ap_ssid = "Solution";
 const char* ap_password = "12345678";
 const int WIFI_MAX_SIZE = 15;
 
@@ -11,8 +11,8 @@ int rssiList[WIFI_MAX_SIZE];
 int scanningCount = 0;
 
 HTMLPage html;
-String connectedSSID = "next_office";
-String connectedPassword = "nextit8850";
+String connectedSSID = "-------";
+String connectedPassword = "-------";
 
 String getConnectedSSID()
 {
